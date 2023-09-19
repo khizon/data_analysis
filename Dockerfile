@@ -9,3 +9,6 @@ COPY requirements.txt .
 
 # Install the packages listed in requirements.txt, clearing the cache.
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all the remaining files
+COPY . .
