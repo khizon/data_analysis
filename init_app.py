@@ -1,9 +1,6 @@
 ## This code is used to check imports
 import numpy as np
 import pandas as pd
-import pandas_profiling
-import prettypandas
-import dabl
 import seaborn as sns
 import matplotlib.pyplot as plt
 
