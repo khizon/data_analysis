@@ -6,4 +6,6 @@ seaborn==0.12.2
 spacy==3.6.1
 tqdm==4.66.1
 xgboost==2.0.0
+lightgbm
+catboost
 ipykernel==6.25.2

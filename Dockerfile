@@ -1,5 +1,5 @@
 # Use an appropriate base image, such as Python.
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # Set the working directory inside the container.
 WORKDIR /data_analysis
@@ -9,6 +9,3 @@ COPY requirements.txt .
 
 # Install the packages listed in requirements.txt, clearing the cache.
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy all the remaining files
-COPY . .
