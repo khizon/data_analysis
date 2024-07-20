@@ -1,8 +1,8 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import re
 import nltk
-from ntlk.corpus import stopwords
 nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 class CleanText(BaseEstimator, TransformerMixin):
     def __init__(self):

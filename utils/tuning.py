@@ -7,10 +7,10 @@ from category_encoders import TargetEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Optional
-from transformations import ConcatText, SplitDateTimeTransformer
+from utils.transformations import ConcatText, SplitDateTimeTransformer
 
 from catboost import CatBoostClassifier
-from lightgbm import LGBMClassifier
+# from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 
 def instantiate_numerical_simple_imputer(trial : Trial, fill_value : int=-1) -> SimpleImputer:
@@ -52,7 +52,9 @@ def instantiate_catboostclf(trial : Trial) -> CatBoostClassifier:
     'border_count': trial.suggest_int('cat_border_count', 1, 255),
     'loss_function': 'MultiClass',
     'verbose': False,
-    'random_state': 42
+    'random_state': 42,
+    'task_type': 'GPU',
+    'devices' :'0'
   }
   return CatBoostClassifier(**params)
 
@@ -66,27 +68,29 @@ def instantiate_xgbclf(trial : Trial) -> XGBClassifier:
     'colsample_bytree': trial.suggest_float('xgb_colsample_bytree', 0.5, 1.0),
     'reg_alpha': trial.suggest_float('xgb_reg_alpha', 1e-5, 10.0),
     'reg_lambda': trial.suggest_float('xgb_reg_lambda', 1e-5, 10.0),
+    'device': 'cuda',
+    'tree_method': 'gpu_hist',  # this enables GPU.
     'verbosity': 0,
     'seed': 42
   }
   return XGBClassifier(**params)
 
-def instantiate_lgbmclf(trial : Trial) -> LGBMClassifier:
-  params = {
-    'num_leaves': trial.suggest_int('lgbm_num_leaves', 2, 255),
-    'max_depth': trial.suggest_int('lgbm_max_depth', 2, 10),
-    'learning_rate': trial.suggest_float('lgbm_learning_rate', 0.01, 0.3),
-    'n_estimators': trial.suggest_int('lgbm_n_estimators', 50, 1000),
-    'min_child_samples': trial.suggest_int('lgbm_min_child_samples', 5, 100),
-    'subsample': trial.suggest_float('lgbm_subsample', 0.5, 1.0),
-    'colsample_bytree': trial.suggest_float('lgbm_colsample_bytree', 0.5, 1.0),
-    'reg_alpha': trial.suggest_float('lgbm_reg_alpha', 1e-5, 10.0),
-    'reg_lambda': trial.suggest_float('lgbm_reg_lambda', 1e-5, 10.0),
-    'num_class': trial.suggest_int('lgbm_num_class', 2, 10),
-    'verbose': -1,
-    'random_state': 42
-  }
-  return LGBMClassifier(**params)
+# def instantiate_lgbmclf(trial : Trial) -> LGBMClassifier:
+#   params = {
+#     'num_leaves': trial.suggest_int('lgbm_num_leaves', 2, 255),
+#     'max_depth': trial.suggest_int('lgbm_max_depth', 2, 10),
+#     'learning_rate': trial.suggest_float('lgbm_learning_rate', 0.01, 0.3),
+#     'n_estimators': trial.suggest_int('lgbm_n_estimators', 50, 1000),
+#     'min_child_samples': trial.suggest_int('lgbm_min_child_samples', 5, 100),
+#     'subsample': trial.suggest_float('lgbm_subsample', 0.5, 1.0),
+#     'colsample_bytree': trial.suggest_float('lgbm_colsample_bytree', 0.5, 1.0),
+#     'reg_alpha': trial.suggest_float('lgbm_reg_alpha', 1e-5, 10.0),
+#     'reg_lambda': trial.suggest_float('lgbm_reg_lambda', 1e-5, 10.0),
+#     'num_class': trial.suggest_int('lgbm_num_class', 2, 10),
+#     'verbose': -1,
+#     'random_state': 42
+#   }
+#   return LGBMClassifier(**params)
 
 def instantiate_dim_reduce(trial : Trial) -> SelectPercentile:
   params = {
@@ -152,13 +156,13 @@ def instantiate_model(trial : Trial, numerical_columns : list[str], categorical_
   )
 
   clf_name = trial.suggest_categorical(
-    'clf', ['XGBoost', 'LightGBM', 'Catboost']
+    'clf', ['XGBoost', 'Catboost']
   )
 
   if clf_name == 'XGBoost':
     clf = instantiate_xgbclf(trial)
-  elif clf_name == 'LightGBM':
-    clf = instantiate_lgbmclf(trial)
+  # elif clf_name == 'LightGBM':
+  #   clf = instantiate_lgbmclf(trial)
   elif clf_name == 'Catboost':
     clf = instantiate_catboostclf(trial)
 
