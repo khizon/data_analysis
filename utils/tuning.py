@@ -19,7 +19,7 @@ def instantiate_numerical_simple_imputer(trial : Trial, fill_value : int=-1) -> 
   )
   return SimpleImputer(strategy=strategy, fill_value=fill_value)
 
-def instantiate_categorical_simple_imputer(trial : Trial, fill_value : str='missing') -> SimpleImputer:
+def instantiate_categorical_simple_imputer(trial : Trial, fill_value : int=-1) -> SimpleImputer:
   strategy = trial.suggest_categorical(
     'categorical_strategy', ['most_frequent', 'constant']
   )
@@ -150,13 +150,13 @@ def instantiate_processor(trial: Trial, numerical_columns: Optional[list[str]]=N
 
   return ColumnTransformer(transformers)
 
-def instantiate_model(trial : Trial, numerical_columns : list[str], categorical_columns : list[str], datetime_columns : list[str], string_columns : list[str]) -> Pipeline:
+def instantiate_model(trial : Trial, numerical_columns : list[str], categorical_columns : list[str], datetime_columns : list[str], string_columns : list[str], models : list[str]) -> Pipeline:
   processor = instantiate_processor(
     trial, numerical_columns, categorical_columns, datetime_columns, string_columns
   )
 
   clf_name = trial.suggest_categorical(
-    'clf', ['XGBoost', 'Catboost']
+    'clf', models
   )
 
   if clf_name == 'XGBoost':
@@ -173,5 +173,7 @@ def instantiate_model(trial : Trial, numerical_columns : list[str], categorical_
     ('dim_reduce', dim_reduce),
     ('clf', clf)
   ])
+
+
 
 
