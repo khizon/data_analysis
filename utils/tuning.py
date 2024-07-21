@@ -60,12 +60,13 @@ def instantiate_catboostclf(trial : Trial) -> CatBoostClassifier:
 
 def instantiate_xgbclf(trial : Trial) -> XGBClassifier:
   params = {
-    'max_depth': trial.suggest_int('xgb_max_depth', 2, 10),
+    'alpha': trial.suggest_float('xgb_alpha', 1e-7, 1e-1),
+    'max_depth': trial.suggest_int('xgb_max_depth', 2, 20),
     'learning_rate': trial.suggest_float('xgb_learning_rate', 0.01, 0.3),
-    'n_estimators': trial.suggest_int('xgb_n_estimators', 50, 1000),
+    'n_estimators': trial.suggest_int('xgb_n_estimators', 50, 1500),
     'min_child_weight': trial.suggest_int('xgb_min_child_weight', 1, 10),
     'subsample': trial.suggest_float('xgb_subsample', 0.5, 1.0),
-    'colsample_bytree': trial.suggest_float('xgb_colsample_bytree', 0.5, 1.0),
+    'colsample_bytree': trial.suggest_float('xgb_colsample_bytree', 0.25, 1.0),
     'reg_alpha': trial.suggest_float('xgb_reg_alpha', 1e-5, 10.0),
     'reg_lambda': trial.suggest_float('xgb_reg_lambda', 1e-5, 10.0),
     'device': 'cuda',
